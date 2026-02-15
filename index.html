@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Swagger Editor & Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-react/swagger-ui.css" />
+    <style>
+      /* Custom scrollbar for better aesthetics in dark/light modes */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      /* Swagger UI Overrides for cleaner look */
+      .swagger-ui .wrapper {
+        padding: 0;
+        max-width: none;
+      }
+      .swagger-ui .info {
+        margin: 20px 0;
+      }
+    </style>
+    <script>
+      // Polyfill global for dependencies that rely on it (common in older React libs or Swagger UI)
+      window.global = window;
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@18.2.0/",
+    "react": "https://esm.sh/react@18.2.0",
+    "react-dom/": "https://esm.sh/react-dom@18.2.0/",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "lucide-react": "https://esm.sh/lucide-react@0.263.1",
+    "@monaco-editor/react": "https://esm.sh/@monaco-editor/react@4.6.0?deps=react@18.2.0,react-dom@18.2.0",
+    "js-yaml": "https://esm.sh/js-yaml@4.1.0",
+    "swagger-ui-react": "https://esm.sh/swagger-ui-react@5.17.14?deps=react@18.2.0,react-dom@18.2.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-slate-50 text-slate-900 antialiased h-screen overflow-hidden flex flex-col">
+    <div id="root" class="h-full flex flex-col"></div>
+    <script type="module" src="./index.tsx"></script>
+  </body>
+</html>
