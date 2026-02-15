@@ -1,15 +1,15 @@
 import React, { useState, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Header } from './components/Header';
 import { FileUploader } from './components/FileUploader';
 import { CodeEditor } from './components/Editor';
 import { SwaggerViewer } from './components/SwaggerViewer';
 
 function App() {
+  const { t } = useTranslation();
   const [fileName, setFileName] = useState<string | null>(null);
   const [specContent, setSpecContent] = useState<string | null>(null);
   
-  // Ref for the invisible file input in header if needed, 
-  // currently Header emits an event handled by a new temporary input or logic.
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileLoaded = useCallback((name: string, content: string) => {
@@ -24,16 +24,13 @@ function App() {
   }, []);
 
   const handleClear = useCallback(() => {
-    if (window.confirm('Are you sure you want to clear the current file? Unsaved changes will be lost.')) {
+    if (window.confirm(t('app.confirm_clear'))) {
       setFileName(null);
       setSpecContent(null);
     }
-  }, []);
+  }, [t]);
 
   const handleUploadClick = useCallback(() => {
-    // If we are in the main view, we trigger a hidden input click
-    // If we are in the upload view, the button there handles it.
-    // This function is for the Header button.
     fileInputRef.current?.click();
   }, []);
 
@@ -41,19 +38,16 @@ function App() {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       file.text().then(text => {
-          // Import parser dynamically or duplicate logic briefly for this quick action
-          // Ideally reuse logic from FileUploader, but for simplicity here:
           import('./utils/parser').then(({ parseFileContent }) => {
             try {
                const parsed = parseFileContent(text, file.name);
                handleFileLoaded(file.name, parsed);
             } catch (err) {
-                alert("Failed to parse file: " + (err as Error).message);
+                alert(t('app.error_parse') + (err as Error).message);
             }
           });
       });
     }
-    // Reset value to allow re-uploading same file
     e.target.value = '';
   };
 
@@ -85,20 +79,22 @@ function App() {
         className="hidden" 
         accept=".json,.yaml,.yml"
         onChange={onHeaderInputChange}
+        aria-hidden="true"
+        tabIndex={-1}
       />
 
-      <main className="flex-1 overflow-hidden relative">
+      <main className="flex-1 overflow-hidden relative" role="main">
         {!specContent ? (
           <FileUploader onFileLoaded={handleFileLoaded} />
         ) : (
           <div className="flex h-full flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-slate-200">
             {/* Left/Top Panel: Editor */}
-            <section className="h-1/2 lg:h-full lg:w-1/2 bg-white flex flex-col min-h-0" aria-label="Editor Panel">
+            <section className="h-1/2 lg:h-full lg:w-1/2 bg-white flex flex-col min-h-0" role="region" aria-label={t('editor.label')}>
               <CodeEditor value={specContent} onChange={handleEditorChange} />
             </section>
 
             {/* Right/Bottom Panel: Viewer */}
-            <section className="h-1/2 lg:h-full lg:w-1/2 bg-slate-50 flex flex-col min-h-0" aria-label="Swagger UI Panel">
+            <section className="h-1/2 lg:h-full lg:w-1/2 bg-slate-50 flex flex-col min-h-0" role="region" aria-label={t('viewer.label')}>
               <SwaggerViewer spec={specContent} />
             </section>
           </div>

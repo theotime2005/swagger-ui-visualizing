@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Editor, { OnMount } from '@monaco-editor/react';
 import { Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CodeEditorProps {
   value: string;
@@ -8,6 +9,7 @@ interface CodeEditorProps {
 }
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({ value, onChange }) => {
+  const { t } = useTranslation();
   const [isEditorReady, setIsEditorReady] = useState(false);
 
   const handleEditorDidMount: OnMount = (editor, monaco) => {
@@ -22,10 +24,17 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, onChange }) => {
   };
 
   return (
-    <div className="h-full relative group">
+    <div 
+      className="h-full relative group" 
+      role="region" 
+      aria-label={t('editor.label')}
+    >
       {!isEditorReady && (
         <div className="absolute inset-0 flex items-center justify-center bg-slate-50 z-10">
-          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+          <div className="flex flex-col items-center gap-2">
+            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" aria-hidden="true" />
+            <span className="text-sm text-slate-500">{t('editor.loading')}</span>
+          </div>
         </div>
       )}
       <Editor
@@ -44,11 +53,11 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ value, onChange }) => {
           scrollBeyondLastLine: false,
           formatOnPaste: true,
           formatOnType: true,
-          ariaLabel: 'JSON Editor',
+          ariaLabel: t('editor.label'),
         }}
       />
-      <div className="absolute top-0 right-0 p-2 bg-white/90 backdrop-blur text-xs text-slate-400 border-b border-l rounded-bl-lg pointer-events-none z-10">
-        JSON Editor (Monaco)
+      <div className="absolute top-0 right-0 p-2 bg-white/90 backdrop-blur text-xs text-slate-400 border-b border-l rounded-bl-lg pointer-events-none z-10" aria-hidden="true">
+        {t('editor.label')}
       </div>
     </div>
   );

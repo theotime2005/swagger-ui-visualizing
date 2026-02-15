@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { UploadCloud, FileJson, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { parseFileContent } from '../utils/parser';
 
 interface FileUploaderProps {
@@ -7,6 +8,7 @@ interface FileUploaderProps {
 }
 
 export const FileUploader: React.FC<FileUploaderProps> = ({ onFileLoaded }) => {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +20,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFileLoaded }) => {
       const parsedJson = parseFileContent(text, file.name);
       onFileLoaded(file.name, parsedJson);
     } catch (err) {
-      setError((err as Error).message);
+      setError(t('app.error_parse') + (err as Error).message);
     }
   };
 
@@ -56,19 +58,23 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFileLoaded }) => {
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
+        role="presentation" // The interactive part is the button, this container visualizes the drop zone
       >
-        <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" aria-hidden="true">
           <UploadCloud className="w-10 h-10 text-blue-600" />
         </div>
         
-        <h2 className="text-2xl font-bold text-slate-800 mb-2">Upload your OpenAPI Spec</h2>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">{t('uploader.title')}</h2>
         <p className="text-slate-500 mb-8">
-          Drag and drop your YAML or JSON file here, or click to browse.
+          {t('uploader.drag_drop')}
         </p>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 text-red-700 text-sm rounded-lg flex items-start gap-2 text-left">
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+          <div 
+            className="mb-6 p-4 bg-red-50 text-red-700 text-sm rounded-lg flex items-start gap-2 text-left" 
+            role="alert"
+          >
+            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true" />
             <span>{error}</span>
           </div>
         )}
@@ -77,7 +83,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFileLoaded }) => {
           onClick={() => fileInputRef.current?.click()}
           className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors focus:ring-4 focus:ring-blue-200 focus:outline-none"
         >
-          Select File
+          {t('uploader.select_file')}
         </button>
         
         <input
@@ -86,17 +92,18 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFileLoaded }) => {
           className="hidden"
           accept=".json,.yaml,.yml"
           onChange={onInputChange}
-          aria-label="Upload OpenAPI File"
+          aria-hidden="true" // Hidden input, button controls it
+          tabIndex={-1}
         />
 
-        <div className="mt-8 flex items-center justify-center gap-6 text-sm text-slate-400">
+        <div className="mt-8 flex items-center justify-center gap-6 text-sm text-slate-400" aria-hidden="true">
           <div className="flex items-center gap-2">
             <FileJson className="w-4 h-4" />
-            <span>JSON Support</span>
+            <span>{t('uploader.json_support')}</span>
           </div>
           <div className="flex items-center gap-2">
             <FileJson className="w-4 h-4" />
-            <span>YAML Support</span>
+            <span>{t('uploader.yaml_support')}</span>
           </div>
         </div>
       </div>
